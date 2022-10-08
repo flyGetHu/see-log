@@ -1,3 +1,7 @@
+pub mod route;
+pub mod service;
+
+
 #[cfg(test)]
 mod tests {
     use std::fs::File;
@@ -16,7 +20,7 @@ mod tests {
         let start = res.len() - 1024;
         let res_final = &res[start..res.len()];
         for line in res_final {
-            println!("{}",line)
+            println!("{}", line)
         }
     }
 }
