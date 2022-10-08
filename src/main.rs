@@ -17,20 +17,17 @@ async fn see_log(req: &mut Request, res: &mut Response) {
         res_list.push(line_res)
     }
     let start = res_list.len() - count;
-    let res_list_final = &res_list[start..res_list.len()];
+    let res_list_final = &res_list[start..];
     let mut res_str = String::new();
-    let mut index = 1;
     for line in res_list_final {
-        res_str += &format!("<p>{}. {}</p>\n", index, line);
-        index += 1;
+        res_str += &format!("{}\n", line);
     }
-    res.render(Text::Html(format!("<html><body>{}</body></html>", res_str)))
+    res.render(format!("{}", res_str))
 }
 
 #[tokio::main]
 async fn main() {
-    let router = Router::new()
-        .push(Router::with_path("/see/log").get(see_log));
+    let router = Router::new().push(Router::with_path("/see/log").get(see_log));
     Server::new(TcpListener::bind("127.0.0.1:3000"))
         .serve(router)
         .await;
