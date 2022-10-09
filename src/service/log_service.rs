@@ -3,7 +3,13 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-pub fn load_log_file(file_path: &str, count: usize) -> String {
+pub fn load_log_file(mode_name: &str, log_lecel: &str, count: usize) -> String {
+    let mut file_path = "";
+    if mode_name == "express" {
+        file_path = "/home/work/express-app/express-app.log"
+    } else if mode_name == "admin-oa" {
+        file_path = "/home/work/admin-oa/admin-oa.log"
+    }
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
     let lines = reader.lines();
