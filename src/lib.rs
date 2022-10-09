@@ -1,7 +1,6 @@
 pub mod route;
 pub mod service;
 
-
 #[cfg(test)]
 mod tests {
     use std::fs::File;
@@ -22,5 +21,14 @@ mod tests {
         for line in res_final {
             println!("{}", line)
         }
+    }
+
+    #[test]
+    fn enum_test() {
+        #[derive(Debug)]
+        enum ProjectModel {
+            Express,
+        }
+        println!("{:?}", ProjectModel::Express)
     }
 }
