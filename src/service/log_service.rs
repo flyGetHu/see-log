@@ -39,11 +39,11 @@ pub fn load_log_file(project_model: crate::entity::ProjectModel) -> String {
             for line in res_list_final {
                 res_str += &format!("{}\n", line);
             }
+            res_str
         }
         Err(err) => {
             println!("打开文件失败:{}", err);
-            return format!("打开文件失败:{}", err);
+            format!("打开文件失败:{}", err)
         }
     }
-    res_str
 }
