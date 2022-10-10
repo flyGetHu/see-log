@@ -25,8 +25,8 @@ pub fn load_log_file(project_model: crate::entity::ProjectModel) -> String {
                         res_list.push(line_data)
                     }
                     Err(err) => {
-                        println!("读取文件行数出错:{}",err);
-                        return String::from(format!("读取文件行数出错:{}",err))
+                        println!("读取文件行数出错:{}", err);
+                        return format!("读取文件行数出错:{}", err);
                     }
                 }
             }
@@ -42,7 +42,7 @@ pub fn load_log_file(project_model: crate::entity::ProjectModel) -> String {
         }
         Err(err) => {
             println!("打开文件失败:{}", err);
-            res_str = String::from(format!("打开文件失败:{}", err))
+            return format!("打开文件失败:{}", err);
         }
     }
     res_str
