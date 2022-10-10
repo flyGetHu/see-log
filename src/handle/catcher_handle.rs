@@ -10,7 +10,7 @@ impl Catcher for Handle404 {
         if let Some(StatusCode::NOT_FOUND) = res.status_code() {
             res.render("Custom 404 Error Page");
             true
-        } else if Some(StatusCode::SERVICE_UNAVAILABLE) = res.status_code() {
+        } else if Some(StatusCode::SERVICE_UNAVAILABLE) == res.status_code() {
             res.render("503 Service Unavailable");
             true
         } else {
