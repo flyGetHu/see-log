@@ -1,4 +1,5 @@
 use salvo::{handler, Request, Response};
+use crate::service::*;
 
 use crate::entity;
 
@@ -16,6 +17,6 @@ pub async fn see_log(req: &mut Request, res: &mut Response) {
         log_level,
         count,
     };
-    let res_str = crate::service::log_service::load_log_file(project_model);
+    let res_str = log_service::load_log_file(project_model);
     res.render(format!("{}", res_str))
 }
