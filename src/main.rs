@@ -1,17 +1,15 @@
-use salvo::Catcher;
 use salvo::prelude::*;
-use see_log::route::*;
+
 use see_log::handle::*;
-
-
+use see_log::route::*;
 
 #[tokio::main]
 async fn main() {
-    let router = Router::new()
-        .push(Router::with_path("/see/log").get(log_route::see_log));
-    let catchers:Vec<Box<dyn Catcher>>=vec![Box::new(catcher_handle::Handle404)];
-    let service=Service::new(router).with_catchers(catchers);
-    Server::new(TcpListener::bind("127.0.0.1:3000"))
+    //挂载路由
+    let service = Service::new(init_route())
+        .with_catchers(inti_catcher());
+    let tcp_listener = TcpListener::bind("0.0.0.0:3000");
+    Server::new(tcp_listener)
         .serve(service)
         .await;
 }
