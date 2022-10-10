@@ -3,8 +3,10 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-pub fn load_log_file(mode_name: &str, log_lecel: &str, count: usize) -> String {
+pub fn load_log_file(project_model: crate::entity::ProjectModel) -> String {
     let mut file_path = "";
+    let mode_name = project_model.mode_name;
+    let count = project_model.count;
     if mode_name == "express" {
         file_path = "/home/work/express-app/express-app.log"
     } else if mode_name == "admin-oa" {
