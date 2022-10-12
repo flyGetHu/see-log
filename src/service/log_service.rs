@@ -26,7 +26,7 @@ pub fn load_log_file(project_model: ProjectModel) -> String {
             }
         }
         Err(err) => {
-            println!("打开文件失败:{}", err);
+            tracing::error!("打开文件失败:{}", err);
             format!("打开文件失败:{}", err)
         }
     }
@@ -47,7 +47,7 @@ fn read_file(file: File) -> Result<Vec<String>, String> {
                 res_list.push(line_data)
             }
             Err(err) => {
-                println!("读取文件行数出错:{}", err);
+                tracing::error!("读取文件行数出错:{}", err);
                 return Err(format!("读取文件行数出错:{}", err));
             }
         }
