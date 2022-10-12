@@ -18,8 +18,13 @@ mod tests {
         for line in lines {
             res.push(line.unwrap())
         }
-        let start = res.len() - 1024;
-        let res_final = &res[start..res.len()];
+        let count = 1024;
+        let mut start = 0;
+        let length = res.len();
+        if length > count {
+            start = length - count;
+        }
+        let res_final = &res[start..length];
         for line in res_final {
             println!("{}", line)
         }
