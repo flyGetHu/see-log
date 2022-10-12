@@ -22,15 +22,15 @@ pub fn load_log_file(project_model: ProjectModel) -> Result<String, String> {
                     }
                     Ok(res_str)
                 }
-                Err(err) => err,
+                Err(err) => Err(err),
             },
             Err(err) => {
                 let msg = format!("{}:{}", err, &file_path);
                 tracing::error!("打开文件失败:{}", msg);
-                format!("打开文件失败:{}", msg)
+                Err(format!("打开文件失败:{}", msg))
             }
         },
-        Err(err) => err,
+        Err(err) => Err(err),
     }
 }
 
@@ -60,7 +60,7 @@ fn read_file(file: File) -> Result<Vec<String>, String> {
 
 ///匹配项目模块信息
 fn match_model_info(project_model: ProjectModel) -> Result<(String, usize), String> {
-    let mut file_path = String::from("");
+    let file_path: String;
     let mode_name = project_model.mode_name;
     let count = project_model.count;
     let log_level = project_model.log_level;

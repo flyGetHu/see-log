@@ -1,4 +1,5 @@
 use crate::service::*;
+use salvo::http::StatusError;
 use salvo::{handler, Request, Response};
 
 use crate::entity;
@@ -17,6 +18,9 @@ pub async fn see_log(req: &mut Request, res: &mut Response) {
         log_level,
         count,
     };
-    let res_str = log_service::load_log_file(project_model);
-    res.render(format!("{}", res_str))
+    let result = log_service::load_log_file(project_model);
+    match result {
+        Ok(data) => res.render(format!("{}", data)),
+        Err(err) => res.set_status_error(StatusError::internal_server_error().with_detail(err)),
+    }
 }
