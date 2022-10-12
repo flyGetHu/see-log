@@ -1,8 +1,8 @@
+use crate::entity::ProjectModel;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
-use crate::entity::ProjectModel;
 
 pub fn load_log_file(project_model: ProjectModel) -> String {
     let (file_path, count) = match_model_info(project_model);
@@ -22,7 +22,7 @@ pub fn load_log_file(project_model: ProjectModel) -> String {
                     }
                     res_str
                 }
-                Err(err) => { err }
+                Err(err) => err,
             }
         }
         Err(err) => {

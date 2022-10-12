@@ -1,7 +1,7 @@
 pub mod entity;
+pub mod handle;
 pub mod route;
 pub mod service;
-pub mod handle;
 
 #[cfg(test)]
 mod tests {

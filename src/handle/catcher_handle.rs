@@ -1,5 +1,5 @@
-use salvo::{Catcher, Depot, Request, Response};
 use salvo::prelude::StatusCode;
+use salvo::{Catcher, Depot, Request, Response};
 
 pub struct CatcherHandle;
 

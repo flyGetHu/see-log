@@ -1,5 +1,5 @@
-use salvo::Catcher;
 use crate::handle::catcher_handle::CatcherHandle;
+use salvo::Catcher;
 
 pub mod catcher_handle;
 
