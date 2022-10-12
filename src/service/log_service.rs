@@ -4,7 +4,8 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-pub fn load_log_file(project_model: ProjectModel) -> String {
+///读取日志文件并返回指定字符串
+pub fn load_log_file(project_model: ProjectModel) -> Result<String, String> {
     match match_model_info(project_model) {
         Ok((file_path, count)) => match File::open(&file_path) {
             Ok(file) => match read_file(file) {
@@ -19,7 +20,7 @@ pub fn load_log_file(project_model: ProjectModel) -> String {
                     for line in res_list_final {
                         res_str += &format!("{}\n", line);
                     }
-                    res_str
+                    Ok(res_str)
                 }
                 Err(err) => err,
             },
@@ -33,6 +34,7 @@ pub fn load_log_file(project_model: ProjectModel) -> String {
     }
 }
 
+//读取指定文件,按行存入vec
 fn read_file(file: File) -> Result<Vec<String>, String> {
     let mut reader = BufReader::new(file);
     let mut line_data: String;
