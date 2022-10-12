@@ -61,8 +61,8 @@ fn match_model_info(project_model: ProjectModel) -> (&'static str, usize) {
     let mode_name = project_model.mode_name;
     let count = project_model.count;
     if mode_name == "express" {
-        // file_path = "/home/work/express-app/express-app.log"
-        file_path = "C:\\Users\\97078\\Desktop\\fsdownload\\error.log"
+        file_path = "/home/work/express-app/express-app.log"
+        // file_path = "C:\\Users\\97078\\Desktop\\fsdownload\\error.log"
     } else if mode_name == "admin-oa" {
         file_path = "/home/work/admin-oa/admin-oa.log"
     }
