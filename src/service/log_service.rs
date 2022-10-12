@@ -2,8 +2,61 @@ use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
+use crate::entity::ProjectModel;
 
-pub fn load_log_file(project_model: crate::entity::ProjectModel) -> String {
+pub fn load_log_file(project_model: ProjectModel) -> String {
+    let (file_path, count) = match_model_info(project_model);
+    match File::open(file_path) {
+        Ok(file) => {
+            return match read_file(file) {
+                Ok(data) => {
+                    let res_len = data.len();
+                    let mut start: usize = 0;
+                    if res_len > count {
+                        start = res_len - count;
+                    }
+                    let res_list_final = &data[start..];
+                    let mut res_str = String::new();
+                    for line in res_list_final {
+                        res_str += &format!("{}\n", line);
+                    }
+                    res_str
+                }
+                Err(err) => { err }
+            }
+        }
+        Err(err) => {
+            println!("打开文件失败:{}", err);
+            format!("打开文件失败:{}", err)
+        }
+    }
+}
+
+fn read_file(file: File) -> Result<Vec<String>, String> {
+    let mut reader = BufReader::new(file);
+    let mut line_data: String;
+    let mut res_list = Vec::with_capacity(1024);
+    loop {
+        line_data = String::from("");
+        match reader.read_line(&mut line_data) {
+            Ok(data_size) => {
+                //代表已完成读取
+                if data_size == 0 {
+                    break;
+                }
+                res_list.push(line_data)
+            }
+            Err(err) => {
+                println!("读取文件行数出错:{}", err);
+                return Err(format!("读取文件行数出错:{}", err));
+            }
+        }
+    }
+    Ok(res_list)
+}
+
+///匹配项目模块信息
+fn match_model_info(project_model: ProjectModel) -> (&'static str, usize) {
     let mut file_path = "";
     let mode_name = project_model.mode_name;
     let count = project_model.count;
@@ -13,37 +66,5 @@ pub fn load_log_file(project_model: crate::entity::ProjectModel) -> String {
     } else if mode_name == "admin-oa" {
         file_path = "/home/work/admin-oa/admin-oa.log"
     }
-    let mut res_str = String::new();
-    match File::open(file_path) {
-        Ok(file) => {
-            let reader = BufReader::new(file);
-            let lines = reader.lines();
-            let mut res_list = Vec::with_capacity(1024);
-            for line in lines {
-                match line {
-                    Ok(line_data) => {
-                        res_list.push(line_data)
-                    }
-                    Err(err) => {
-                        println!("读取文件行数出错:{}", err);
-                        return format!("读取文件行数出错:{}", err);
-                    }
-                }
-            }
-            let res_len = res_list.len();
-            let mut start: usize = 0;
-            if res_len > count {
-                start = res_len - count;
-            }
-            let res_list_final = &res_list[start..];
-            for line in res_list_final {
-                res_str += &format!("{}\n", line);
-            }
-            res_str
-        }
-        Err(err) => {
-            println!("打开文件失败:{}", err);
-            format!("打开文件失败:{}", err)
-        }
-    }
+    (file_path, count)
 }

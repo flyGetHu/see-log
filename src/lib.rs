@@ -38,4 +38,22 @@ mod tests {
         }
         println!("{:?}", ProjectModel::Express)
     }
+
+    #[test]
+    fn file_read_test() {
+        let path = "C:\\Users\\97078\\Desktop\\fsdownload\\access.log";
+        let file = File::open(path).unwrap();
+        let mut reader = BufReader::new(file);
+        let mut buf: String = String::from("");
+        loop {
+            buf.clear();
+            let size = reader.read_line(&mut buf).expect("TODO: panic message");
+            if buf.len() != 0 {
+                println!("{}", buf)
+            } else {
+                println!("{size}");
+                break;
+            }
+        }
+    }
 }
