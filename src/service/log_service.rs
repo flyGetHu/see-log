@@ -8,6 +8,9 @@ use std::{
 pub fn load_log_file(project_model: LogParam) -> Result<String, String> {
     let count = project_model.count;
     let file_path = project_model.file_path;
+    if !file_path.ends_with(".log") {
+        return Err(format!("当前只允许查看日志类型文件:{}", file_path));
+    }
     match File::open(&file_path) {
         Ok(file) => match read_file(file) {
             Ok(data) => {
