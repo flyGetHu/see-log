@@ -1,36 +1,35 @@
-use crate::entity::ProjectModel;
+use crate::entity::LogParam;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
 
 ///读取日志文件并返回指定字符串
-pub fn load_log_file(project_model: ProjectModel) -> Result<String, String> {
-    match match_model_info(project_model) {
-        Ok((file_path, count)) => match File::open(&file_path) {
-            Ok(file) => match read_file(file) {
-                Ok(data) => {
-                    let res_len = data.len();
-                    let mut start: usize = 0;
-                    if res_len > count {
-                        start = res_len - count;
-                    }
-                    let res_list_final = &data[start..];
-                    let mut res_str = String::new();
-                    for line in res_list_final {
-                        res_str += &format!("{}\n", line);
-                    }
-                    Ok(res_str)
+pub fn load_log_file(project_model: LogParam) -> Result<String, String> {
+    let count = project_model.count;
+    let file_path = project_model.file_path;
+    match File::open(&file_path) {
+        Ok(file) => match read_file(file) {
+            Ok(data) => {
+                let res_len = data.len();
+                let mut start: usize = 0;
+                if res_len > count {
+                    start = res_len - count;
                 }
-                Err(err) => Err(err),
-            },
-            Err(err) => {
-                let msg = format!("{}:{}", err, &file_path);
-                tracing::error!("打开文件失败:{}", msg);
-                Err(format!("打开文件失败:{}", msg))
+                let res_list_final = &data[start..];
+                let mut res_str = String::new();
+                for line in res_list_final {
+                    res_str += &format!("{}\n", line);
+                }
+                Ok(res_str)
             }
+            Err(err) => Err(err),
         },
-        Err(err) => Err(err),
+        Err(err) => {
+            let msg = format!("{}:{}", err, &file_path);
+            tracing::error!("打开文件失败:{}", msg);
+            Err(format!("打开文件失败:{}", msg))
+        }
     }
 }
 
@@ -56,31 +55,4 @@ fn read_file(file: File) -> Result<Vec<String>, String> {
         }
     }
     Ok(res_list)
-}
-
-///匹配项目模块信息
-fn match_model_info(project_model: ProjectModel) -> Result<(String, usize), String> {
-    let file_path: String;
-    let mode_name = project_model.mode_name;
-    let count = project_model.count;
-    let log_level = project_model.log_level;
-    if mode_name == "local" {
-        //本地测试
-        file_path = String::from("C:\\Users\\97078\\Desktop\\fsdownload\\error.log")
-    } else if mode_name == "express" {
-        //海外项目
-        file_path = String::from("/home/work/express-app/express-app.log")
-    } else if mode_name == "z-manage" {
-        //国内管理端
-        file_path = String::from("/home/work/admin-oa/admin-oa.log")
-    } else if mode_name == "z-warehouse" {
-        //国内仓储
-        file_path = format!("/home/work/anjun-warehouse-server/logs/{}.log", log_level);
-    } else {
-        return Err(format!(
-            "请检查参数是否异常:{},{},{}",
-            mode_name, count, log_level
-        ));
-    }
-    Ok((file_path, count))
 }
