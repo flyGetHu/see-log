@@ -4,9 +4,15 @@ use salvo::{handler, Request, Response};
 
 use crate::entity;
 
+//最大可以查看的日志行数
+const MAX_LINE_SIZE: usize = 2048;
+
 #[handler]
 pub async fn see_log(req: &mut Request, res: &mut Response) {
-    let count = req.query("count").unwrap_or_else(|| 1024);
+    let mut count = req.query("count").unwrap_or_else(|| MAX_LINE_SIZE / 2);
+    if count > MAX_LINE_SIZE {
+        count = MAX_LINE_SIZE
+    }
     let file_path_query = req.query("file_path");
     match file_path_query {
         None => {
