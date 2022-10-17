@@ -5,7 +5,7 @@ use salvo::{handler, Request, Response};
 use crate::entity;
 
 //最大可以查看的日志行数
-const MAX_LINE_SIZE: usize = 2048;
+const MAX_LINE_SIZE: usize = 5000;
 
 #[handler]
 pub async fn see_log(req: &mut Request, res: &mut Response) {
