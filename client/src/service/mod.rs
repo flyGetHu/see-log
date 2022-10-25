@@ -5,7 +5,12 @@ use std::fs::{metadata, read_dir};
 fn load_log_files(root_path: &str) -> Result<Vec<String>, Box<dyn Error>> {
     let mut path_list = vec![String::from(root_path)];
     let mut start_index = 0;
+    let mut layer = 0;
     loop {
+        if layer == 2 {
+            break;
+        }
+        layer += 1;
         let list_len = path_list.len();
         for index in start_index..path_list.len() {
             let path = &path_list[index];
