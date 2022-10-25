@@ -1,6 +1,5 @@
-use salvo::http::cookie::time;
-use std::thread;
 use std::time::Duration;
+use std::{thread, time};
 
 #[test]
 fn workout_test() {

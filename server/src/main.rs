@@ -1,9 +1,8 @@
 use ferris_says::say;
 use salvo::prelude::*;
+use server::handle::inti_catcher;
+use server::route::init_route;
 use std::io::{stdout, BufWriter};
-
-use see_log::handle::*;
-use see_log::route::*;
 
 #[tokio::main]
 async fn main() {
