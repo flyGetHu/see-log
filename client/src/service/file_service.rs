@@ -1,5 +1,6 @@
 use std::error::Error;
-use std::fs::read_dir;
+use std::fs::{read_dir, File};
+use std::io::{BufRead, BufReader};
 
 // 读取所有日志文件 只获取第二层文件的日志文件
 fn load_log_files(
@@ -37,13 +38,43 @@ fn load_log_files(
     return Ok(path_list.to_owned());
 }
 
+fn read_file(file: File) -> Result<Vec<String>, String> {
+    let mut reader = BufReader::new(file);
+    let mut line_data: String;
+    let mut res_list = Vec::with_capacity(1024);
+    loop {
+        line_data = String::from("");
+        match reader.read_line(&mut line_data) {
+            Ok(data_size) => {
+                //代表已完成读取
+                if data_size == 0 {
+                    break;
+                }
+                res_list.push(line_data)
+            }
+            Err(err) => {
+                println!("读取文件行数出错:{}", err);
+                return Err(format!("读取文件行数出错:{}", err));
+            }
+        }
+    }
+    Ok(res_list)
+}
+
 #[test]
 fn load_log_files_test() {
     let mut path_list: Vec<String> = vec![];
     match load_log_files(crate::common::PROJECT_LOG_ROOT_PATH, &mut path_list) {
         Ok(files) => {
-            for file in files {
-                println!("{:?}", file)
+            for file_path in files {
+                println!("{:?}", file_path);
+                match File::open(file_path) {
+                    Ok(file) => {
+                        let file_data = read_file(file);
+                        println!("{:?}", file_data)
+                    }
+                    Err(_) => todo!(),
+                }
             }
         }
         Err(_) => {}
