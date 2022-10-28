@@ -1,6 +1,9 @@
+use hotwatch::{Event, Hotwatch};
 use std::error::Error;
 use std::fs::{read_dir, File};
 use std::io::{BufRead, BufReader};
+use std::thread::sleep;
+use std::time::Duration;
 
 // 读取所有日志文件 只获取第二层文件的日志文件
 fn load_log_files(
@@ -79,4 +82,26 @@ fn load_log_files_test() {
         }
         Err(_) => {}
     };
+}
+
+#[test]
+fn file_hotwatch_test() {
+    use hotwatch::{Event, Hotwatch};
+
+    let mut hotwatch = Hotwatch::new().expect("hotwatch failed to initialize!");
+    hotwatch
+        .watch("./", |event: Event| {
+            println!("get some event {:?}", event);
+            if let Event::Write(path) = event {
+                if path.file_name().unwrap().to_str().unwrap().eq("test.txt") {
+                    println!("test.txt has changed.{:?}", path);
+                } else {
+                    println!("other file has been changed!{:?}", path);
+                }
+            }
+        })
+        .expect("failed to watch file!");
+    loop {
+        sleep(Duration::from_secs(2))
+    }
 }
