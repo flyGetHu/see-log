@@ -31,3 +31,10 @@ fn workout_test() {
         );
     }
 }
+
+#[test]
+fn str_test() {
+    let s = String::from("foo");
+
+    assert_eq!("foo", s.as_str());
+}
