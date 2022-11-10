@@ -18,7 +18,7 @@ async fn main() {
         let message = format!("项目启动成功:{address}");
         let stdout = stdout();
         let mut writer = BufWriter::new(stdout.lock());
-        say(message.as_bytes(), message.chars().count() + 6, &mut writer).unwrap();
+        say(message.as_str(), message.chars().count() + 6, &mut writer).unwrap();
     }
 
     //初始化路由 启动webserver
