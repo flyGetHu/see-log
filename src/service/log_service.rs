@@ -1,9 +1,5 @@
-use num::ToPrimitive;
-use std::collections::HashMap;
-use std::fs::read;
 use std::{
     fs::File,
-    i32,
     io::{BufRead, BufReader},
 };
 
