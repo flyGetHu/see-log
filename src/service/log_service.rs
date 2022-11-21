@@ -1,8 +1,13 @@
-use crate::entity::LogParam;
+use num::ToPrimitive;
+use std::collections::HashMap;
+use std::fs::read;
 use std::{
     fs::File,
+    i32,
     io::{BufRead, BufReader},
 };
+
+use crate::entity::LogParam;
 
 ///读取日志文件并返回指定字符串
 pub fn load_log_file(project_model: LogParam) -> Result<String, String> {
@@ -11,45 +16,41 @@ pub fn load_log_file(project_model: LogParam) -> Result<String, String> {
     if !file_path.ends_with(".log") {
         return Err(format!("当前只允许查看日志类型文件:{}", file_path));
     }
-    match File::open(&file_path) {
-        Ok(file) => match read_file(file) {
-            Ok(data) => {
-                let res_len = data.len();
-                let mut start: usize = 0;
-                if res_len > count {
-                    start = res_len - count;
-                }
-                let res_list_final = &data[start..];
-                let mut res_str = String::new();
-                for line in res_list_final {
-                    res_str += &format!("{}\n", line);
-                }
-                Ok(res_str)
+    return match read_file(file_path, count) {
+        Ok(data) => {
+            let mut res_str = String::new();
+            for line in data {
+                res_str += &format!("{}\n", line);
             }
-            Err(err) => Err(err),
-        },
-        Err(err) => {
-            let msg = format!("{}:{}", err, &file_path);
-            tracing::error!("打开文件失败:{}", msg);
-            Err(format!("打开文件失败:{}", msg))
+            Ok(res_str)
         }
-    }
+        Err(err) => Err(err),
+    };
 }
 
 //读取指定文件,按行存入vec
-fn read_file(file: File) -> Result<Vec<String>, String> {
-    let mut reader = BufReader::new(file);
-    let mut line_data: String;
-    let mut res_list = Vec::with_capacity(1024);
-    loop {
-        line_data = String::from("");
-        match reader.read_line(&mut line_data) {
-            Ok(data_size) => {
-                //代表已完成读取
-                if data_size == 0 {
-                    break;
-                }
-                res_list.push(line_data)
+fn read_file(file_path: String, max_res_count: usize) -> Result<Vec<String>, String> {
+    let file_lines_count = match File::open(&file_path) {
+        Ok(file) => BufReader::new(file).lines().count(),
+        Err(err) => {
+            tracing::error!("读取文件出错:{}", err);
+            0
+        }
+    };
+    if file_lines_count == 0 {
+        return Err(format!("文件:{}不存在", file_path));
+    }
+    let reader = BufReader::new(File::open(&file_path).unwrap());
+    let difference: isize = (file_lines_count - max_res_count) as isize;
+    let begin_read_index = num::abs(difference);
+    let mut res_list = Vec::with_capacity(max_res_count);
+    for (index, line) in reader.lines().enumerate() {
+        if index < begin_read_index as usize {
+            continue;
+        }
+        match line {
+            Ok(line_data) => {
+                res_list.push(line_data);
             }
             Err(err) => {
                 tracing::error!("读取文件行数出错:{}", err);
