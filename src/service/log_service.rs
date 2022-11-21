@@ -41,6 +41,7 @@ fn read_file(file_path: String, max_res_count: usize) -> Result<Vec<String>, Str
         return Err(format!("文件:{}不存在", file_path));
     }
     let reader = BufReader::new(File::open(&file_path).unwrap());
+    //文件总行数-最大可查看行数 获取绝对值 读取文件时从此处开始存入数据
     let difference: isize = (file_lines_count - max_res_count) as isize;
     let begin_read_index = num::abs(difference);
     let mut res_list = Vec::with_capacity(max_res_count);
