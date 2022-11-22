@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-//读取指定文件,按行存入vec
+//读取指定文件,按行存入vec 读取文件最后多少行
 pub fn read_file(file_path: String, max_res_count: usize) -> Result<Vec<String>, String> {
     let file_lines_count = match File::open(&file_path) {
         Ok(file) => BufReader::new(file).lines().count(),
@@ -18,6 +18,7 @@ pub fn read_file(file_path: String, max_res_count: usize) -> Result<Vec<String>,
     let difference: isize = (file_lines_count - max_res_count) as isize;
     let begin_read_index = num::abs(difference);
     let mut res_list = Vec::with_capacity(max_res_count);
+    //从文件开始行读取,其他行跳过
     for (index, line) in reader.lines().enumerate() {
         if index < begin_read_index as usize {
             continue;
