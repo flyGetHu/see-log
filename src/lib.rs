@@ -5,6 +5,7 @@ pub mod handle;
 pub mod route;
 pub mod service;
 mod test;
+pub mod utils;
 
 #[cfg(test)]
 mod tests {

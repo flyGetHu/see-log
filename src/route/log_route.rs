@@ -19,8 +19,7 @@ pub async fn see_log(req: &mut Request, res: &mut Response) {
             res.set_status_error(StatusError::internal_server_error().with_detail("file_path必传"));
         }
         Some(file_path) => {
-            let project_model = entity::LogParam { file_path, count };
-            let result = log_service::load_log_file(project_model);
+            let result = entity::log_file::LogFile { file_path, count }.load_log_file();
             match result {
                 Ok(data) => res.render(format!("{}", data)),
                 Err(err) => {
