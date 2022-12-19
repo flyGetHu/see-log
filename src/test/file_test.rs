@@ -70,7 +70,7 @@ fn test4() {
             x: left_edge,
             y: top_edge,
         },
-        bottom_right: bottom_right,
+        bottom_right,
     };
 
     // 实例化一个单元结构体
