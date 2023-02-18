@@ -4,3 +4,4 @@ mod format_test;
 mod match_test;
 mod new_type_test;
 mod num_test;
+mod rc_test;
