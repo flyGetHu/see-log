@@ -3,12 +3,8 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
+use crate::enums::common::Message;
 
-//定义消息类型
-enum Message {
-    Line(String),
-    End,
-}
 
 // read file tail, return Result<Vec<String>, String>
 pub fn read_file_tail(file_path: impl AsRef<Path>, max_res_count: usize) -> Result<Vec<String>, String> {
