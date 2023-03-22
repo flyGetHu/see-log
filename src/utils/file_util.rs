@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 //读取指定文件,按行存入vec 读取文件最后多少行
-pub fn read_file(file_path: String, max_res_count: usize) -> Result<Vec<String>, String> {
+pub fn read_file_tail(file_path: String, max_res_count: usize) -> Result<Vec<String>, String> {
     let file_lines_count = match File::open(&file_path) {
         Ok(file) => BufReader::new(file).lines().count(),
         Err(err) => {

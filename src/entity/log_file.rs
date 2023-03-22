@@ -16,7 +16,7 @@ impl LogFile {
         if !file_path.ends_with(".log") {
             return Err(format!("当前只允许查看日志类型文件:{}", file_path));
         }
-        return match file_util::read_file(file_path, count) {
+        return match file_util::read_file_tail(file_path, count) {
             Ok(data) => {
                 let mut res_str = String::new();
                 for line in data {
