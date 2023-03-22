@@ -1,37 +1,72 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::path::Path;
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::thread;
 
-//读取指定文件,按行存入vec 读取文件最后多少行
-pub fn read_file_tail(file_path: String, max_res_count: usize) -> Result<Vec<String>, String> {
-    let file_lines_count = match File::open(&file_path) {
-        Ok(file) => BufReader::new(file).lines().count(),
-        Err(err) => {
-            tracing::error!("读取文件出错:{}", err);
-            0
-        }
-    };
+//定义消息类型
+enum Message {
+    Line(String),
+    End,
+}
+
+// read file tail, return Result<Vec<String>, String>
+pub fn read_file_tail(file_path: impl AsRef<Path>, max_res_count: usize) -> Result<Vec<String>, String> {
+    let file_lines_count = get_file_line_count(file_path.as_ref())?;
     if file_lines_count == 0 {
-        return Err(format!("文件:{}不存在", file_path));
+        return Err(format!("文件:{}无数据", file_path.as_ref().display()));
     }
-    let reader = BufReader::new(File::open(&file_path).unwrap());
-    //文件总行数-最大可查看行数 获取绝对值 读取文件时从此处开始存入数据
-    let difference: isize = (file_lines_count - max_res_count) as isize;
-    let begin_read_index = num::abs(difference);
-    let mut res_list = Vec::with_capacity(max_res_count);
-    //从文件开始行读取,其他行跳过
-    for (index, line) in reader.lines().enumerate() {
-        if index < begin_read_index as usize {
-            continue;
+
+    let (tx, rx): (Sender<Message>, Receiver<Message>) = channel(); //定义通道
+
+    let reader = BufReader::new(File::open(file_path).map_err(|err| format!("文件不存在:{}", err))?);
+    let begin_read_index = if max_res_count > file_lines_count {
+        0
+    } else {
+        file_lines_count - max_res_count
+    };
+
+    //启动一个线程逐行读取文件内容
+    let read_handle = thread::spawn(move || {
+        let mut lines = reader.lines();
+        for (index, line) in lines.by_ref().enumerate() {
+            if index >= begin_read_index {
+                match line {
+                    Ok(line_data) => {
+                        if tx.send(Message::Line(line_data)).is_err() {
+                            tracing::error!("发送消息出错");
+                            break;
+                        }
+                    }
+                    Err(err) => {
+                        tracing::error!("读取文件出错:{}", err);
+                    }
+                }
+            }
         }
-        match line {
-            Ok(line_data) => {
+        let _ = tx.send(Message::End); //发送结束消息
+    });
+
+    let mut res_list = Vec::with_capacity(max_res_count);
+    //处理消息队列中的数据
+    for msg in rx {
+        match msg {
+            Message::Line(line_data) => {
                 res_list.push(line_data);
             }
-            Err(err) => {
-                tracing::error!("读取文件行数出错:{}", err);
-                return Err(format!("读取文件行数出错:{}", err));
+            Message::End => {
+                break;
             }
         }
     }
+    //等待读取线程结束
+    read_handle.join().unwrap();
     Ok(res_list)
+}
+
+// get file total line count, return Result<usize, String>,
+pub fn get_file_line_count(file_path: impl AsRef<Path>) -> Result<usize, String> {
+    let file_content = std::fs::read_to_string(file_path.as_ref()).map_err(|err| format!("文件不存在:{}", err))?;
+    let file_lines_count = file_content.lines().count();
+    Ok(file_lines_count)
 }
