@@ -63,8 +63,11 @@ pub fn read_file_tail(
 
 // get file total line count, return Result<usize, String>,
 pub fn get_file_line_count(file_path: impl AsRef<Path>) -> Result<usize, String> {
-    let file = File::open(file_path.as_ref()).map_err(|err| format!("文件不存在:{}", err))?; //打开文件
+    // Open the file
+    let file = File::open(file_path.as_ref()).map_err(|err| format!("File does not exist: {}", err))?;
     let reader = BufReader::new(file);
+
+    // Read the number of lines in the file
     let file_lines_count = reader.lines().count();
     Ok(file_lines_count)
 }
