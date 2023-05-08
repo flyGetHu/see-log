@@ -1,8 +1,9 @@
-use ferris_says::say;
-use salvo::prelude::*;
-use std::io::{stdout, BufWriter};
+use std::io::{BufWriter, stdout};
 
-use see_log::handle::*;
+use ferris_says::say;
+use salvo::catcher::Catcher;
+use salvo::prelude::*;
+
 use see_log::route::*;
 
 #[tokio::main]
@@ -11,7 +12,7 @@ async fn main() {
     tracing_subscriber::fmt().init();
 
     let address = "0.0.0.0:3000";
-    let tcp_listener = TcpListener::bind(address);
+    let tcp_listener = TcpListener::new(address).bind().await;
 
     //打印启动日志
     {
@@ -22,6 +23,31 @@ async fn main() {
     }
 
     //初始化路由 启动webserver
-    let service = Service::new(init_route()).with_catchers(inti_catcher());
+    let service = Service::new(init_route()).with_catcher(Catcher::default().hoop(handle404));
     Server::new(tcp_listener).serve(service).await;
+}
+
+
+// 统一处理异常
+#[handler]
+async fn handle404(_req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
+    match res.status_code() {
+        None => {
+            res.set_status_code(StatusCode::NOT_FOUND);
+        }
+        Some(status_code) => {
+            match status_code {
+                StatusCode::NOT_FOUND => {
+                    res.render("404");
+                }
+                StatusCode::INTERNAL_SERVER_ERROR => {
+                    res.render("系统错误,请联系管理员");
+                }
+                _ => {
+                    res.render("系统错误,请联系管理员");
+                }
+            }
+        }
+    }
+    ctrl.skip_rest();
 }
