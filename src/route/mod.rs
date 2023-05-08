@@ -1,8 +1,8 @@
 use salvo::logging::Logger;
 use salvo::Router;
 
-pub mod log_route;
 pub mod health_route;
+pub mod log_route;
 
 pub fn init_route() -> Router {
     Router::new()

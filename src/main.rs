@@ -29,7 +29,13 @@ async fn main() {
 
 // 统一处理异常
 #[handler]
-async fn catcher_handle(&self, _req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
+async fn catcher_handle(
+    &self,
+    _req: &Request,
+    _depot: &Depot,
+    res: &mut Response,
+    ctrl: &mut FlowCtrl,
+) {
     match res.status_code() {
         None => {
             res.set_status_code(StatusCode::NOT_FOUND);
