@@ -12,38 +12,20 @@ pub fn read_file_tail(
         return Err(format!("文件:{}无数据", file_path.as_ref().display()));
     }
 
-    let reader =
-        BufReader::new(File::open(file_path).map_err(|err| format!("文件不存在:{}", err))?);
-    let begin_read_index = if max_res_count > file_lines_count {
-        0
-    } else {
-        file_lines_count - max_res_count
-    };
-    let mut res_list = Vec::with_capacity(max_res_count);
-    let lines = reader.lines().skip(begin_read_index);
-    for line in lines {
-        match line {
-            Ok(line_data) => {
-                res_list.push(line_data);
-            }
-            Err(err) => {
-                tracing::error!("读取文件出错:{}", err);
-                return Err(format!("读取文件出错:{}", err));
-            }
-        }
-    }
-    //等待读取线程结束
+    let file = File::open(file_path.as_ref()).map_err(|err| format!("文件不存在:{}", err))?;
+    let lines = BufReader::new(file)
+        .lines()
+        .skip(file_lines_count.saturating_sub(max_res_count));
+    let res_list = lines
+        .map(|line| line.unwrap_or_else(|err| format!("读取文件出错:{}", err)))
+        .collect::<Vec<String>>();
     Ok(res_list)
 }
 
 // get file total line count, return Result<usize, String>,
 pub fn get_file_line_count(file_path: impl AsRef<Path>) -> Result<usize, String> {
-    // Open the file
-    let file =
-        File::open(file_path.as_ref()).map_err(|err| format!("File does not exist: {}", err))?;
+    let file = File::open(file_path.as_ref()).map_err(|err| format!("文件不存在:{}", err))?;
     let reader = BufReader::new(file);
-
-    // Read the number of lines in the file
     let file_lines_count = reader.lines().count();
     Ok(file_lines_count)
 }
