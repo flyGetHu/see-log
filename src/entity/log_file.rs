@@ -21,7 +21,7 @@ impl LogFile {
                 let res_str = data.join("\n");
                 Ok(res_str)
             }
-            Err(err) => Err(err),
+            Err(err) => Err(format!("读取日志文件失败:{}", err)),
         }
     }
 }
