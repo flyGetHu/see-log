@@ -8,7 +8,7 @@ version = "0.1.0"
 ferris-says = "*"
 num = "0.4.0"
 ring = "0.16.20"
+salvo = {version = "*", features = ["logging", "oapi"]}
+tokio = {version = "*", features = ["macros"]}
 tracing = "0.1"
 tracing-subscriber = "0.3"
-salvo = { version = "*", features = ["logging"] }
-tokio = { version = "*", features = ["macros"] }

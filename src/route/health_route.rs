@@ -1,6 +1,6 @@
-use salvo::{handler, Request, Response};
+use salvo::{endpoint, Request, Response};
 
-#[handler]
+#[endpoint]
 pub async fn health(_: &mut Request, res: &mut Response) {
     res.render("success")
 }
