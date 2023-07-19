@@ -1,6 +1,6 @@
 use salvo::http::StatusError;
 use salvo::oapi::extract::QueryParam;
-use salvo::{endpoint, Request, Response};
+use salvo::{endpoint, Response};
 
 use entity::log_file::LogFile;
 

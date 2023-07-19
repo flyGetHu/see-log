@@ -10,7 +10,8 @@ pub fn init_route() -> Router {
         .hoop(Logger::new())
         .push(Router::with_path("/health").get(health_route::health))
         .push(Router::with_path("/see/log").get(log_route::see_log));
-    let doc = OpenApi::new("test api", "0.0.1").merge_router(&router);
+    // swagger
+    let doc = OpenApi::new("open api", "0.0.1").merge_router(&router);
     Router::new()
         .push(router)
         .push(doc.into_router("/api-doc/openapi.json"))
