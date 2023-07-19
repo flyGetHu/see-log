@@ -3,8 +3,6 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-use salvo::http::uri::Port;
-
 #[test]
 fn read_file_test() {
     let file_path = String::from("D:\\home\\work\\admin-app\\logs\\admin-app_2022-11-01.log");
