@@ -1,3 +1,18 @@
+//! This is the main file of the `see-log` project.
+//!
+//! It initializes the logging system, sets up the web server, and defines a custom 404 error page.
+//!
+//! The `main` function initializes the logging system, sets up the web server, and starts listening for incoming requests.
+//!
+//! The `handle404` function is a custom error handler that is called when a 404 error occurs. It renders a custom 404 error page and skips the rest of the middleware chain.
+//!
+//! This file depends on the following external crates:
+//!
+//! - `ferris_says`: for rendering ASCII art messages
+//! - `salvo`: for building web servers
+//! - `see_log`: for defining the routes of the web server
+//!
+//! The file is located at `see-log\src\main.rs`.
 use std::io::{stdout, BufWriter};
 
 use ferris_says::say;

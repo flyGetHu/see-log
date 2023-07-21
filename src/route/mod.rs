@@ -1,3 +1,14 @@
+/// Initializes the routes for the application.
+///
+/// This function creates a new router and adds two routes to it:
+/// - "/health" which returns the health status of the application
+/// - "/see/log" which returns the logs of the application
+///
+/// It also adds OpenAPI documentation for the router and Swagger UI for the documentation.
+///
+/// # Returns
+///
+/// A `Router` instance with the defined routes and documentation.
 use salvo::logging::Logger;
 use salvo::prelude::{OpenApi, SwaggerUi};
 use salvo::Router;

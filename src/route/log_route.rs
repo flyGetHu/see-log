@@ -1,5 +1,12 @@
-use salvo::http::StatusError;
+/// This endpoint allows the user to view the contents of a log file. It takes two query parameters:
+/// - `count`: the number of lines to display (up to a maximum of `MAX_LINE_SIZE`)
+/// - `file_path`: the path to the log file to be displayed
+///
+/// If `file_path` is not provided, the endpoint will return a 500 Internal Server Error with the message "file_path必传".
+///
+/// The endpoint returns the contents of the log file as a string, or a 500 Internal Server Error with the error message if there was an error loading the file.
 use salvo::oapi::extract::QueryParam;
+use salvo::prelude::StatusError;
 use salvo::{endpoint, Response};
 
 use entity::log_file::LogFile;
