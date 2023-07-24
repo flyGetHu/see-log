@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, Seek, SeekFrom};
+use std::io::{self, BufRead, BufReader};
 use std::path::Path;
 
 /// Read the last few lines of a file
@@ -17,33 +17,30 @@ use std::path::Path;
 ///
 /// Returns an `io::Error` if the file cannot be opened or read.
 pub fn read_file_tail(
-  file_path: impl AsRef<Path>,
-  max_res_count: usize,
+    file_path: impl AsRef<Path>,
+    max_res_count: usize,
 ) -> io::Result<Vec<String>> {
-  let mut file = File::open(file_path.as_ref())?;
-  let file_len = file.metadata()?.len();
-  // Seek to the end of the file
-  file.seek(SeekFrom::End(0))?;
-
-  let mut reader = BufReader::new(file);
-  let mut res_list = Vec::with_capacity(max_res_count);
-  let mut pos = file_len as usize;
-
-  // Read lines from the end of the file
-  while pos > 0 && res_list.len() < max_res_count {
-    let mut line = String::new();
-    match reader.read_line(&mut line) {
-      Ok(_) => {
-        res_list.push(line.clone());
-      }
-      Err(err) => {
-        return Err(err);
-      }
+    let file = File::open(file_path.as_ref())?;
+    let reader = BufReader::new(file);
+    let lines = reader.lines();
+    let mut res_vec: Vec<String> = Vec::with_capacity(max_res_count);
+    let mut end_line = String::new();
+    for line_res in lines {
+        match line_res {
+            Ok(line) => {
+                if res_vec.len() >= max_res_count {
+                    end_line = res_vec[0].clone();
+                    res_vec.remove(0);
+                }
+                res_vec.push(line);
+            }
+            Err(err) => {
+                return Err(err);
+            }
+        }
     }
-    pos -= line.len();
-    // Seek to the start of the previous line
-    reader.seek(SeekFrom::Start(pos as u64))?;
-  }
-  res_list.reverse(); // The lines are in reverse order, so we reverse them
-  Ok(res_list)
+    if res_vec.len() < max_res_count {
+        res_vec.insert(0, end_line);
+    }
+    Ok(res_vec)
 }
