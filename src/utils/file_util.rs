@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 use std::path::Path;
@@ -19,28 +20,23 @@ use std::path::Path;
 pub fn read_file_tail(
     file_path: impl AsRef<Path>,
     max_res_count: usize,
-) -> io::Result<Vec<String>> {
+) -> io::Result<VecDeque<String>> {
     let file = File::open(file_path.as_ref())?;
     let reader = BufReader::new(file);
     let lines = reader.lines();
-    let mut res_vec: Vec<String> = Vec::with_capacity(max_res_count);
-    let mut end_line = String::new();
+    let mut res_deque: VecDeque<String> = VecDeque::with_capacity(max_res_count);
     for line_res in lines {
         match line_res {
             Ok(line) => {
-                if res_vec.len() >= max_res_count {
-                    end_line = res_vec[0].clone();
-                    res_vec.remove(0);
+                if res_deque.len() >= max_res_count {
+                    res_deque.pop_front();
                 }
-                res_vec.push(line);
+                res_deque.push_back(line);
             }
             Err(err) => {
                 return Err(err);
             }
         }
     }
-    if res_vec.len() < max_res_count {
-        res_vec.insert(0, end_line);
-    }
-    Ok(res_vec)
+    Ok(res_deque)
 }

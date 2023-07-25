@@ -18,7 +18,11 @@ impl LogFile {
         }
         match file_util::read_file_tail(file_path, count) {
             Ok(data) => {
-                let res_str = data.join("\n");
+                let mut res_str =String::new();
+                for line in data {
+                    res_str.push_str(&line);
+                    res_str.push_str("\n");
+                }
                 Ok(res_str)
             }
             Err(err) => Err(format!("读取日志文件失败:{}", err)),
